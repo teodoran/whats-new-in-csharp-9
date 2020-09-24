@@ -20,15 +20,43 @@ var noOfStatusesOtherThanInProgress = statuses.Count(status => status is not InP
 Console.WriteLine($"No statuses other than InProgress is {noOfStatusesOtherThanInProgress}");
 
 // Let's get to the matching!
-bool Test(IStatus status) => status switch
+
+/*
+ * Status is active if:
+ * - Isn't complete.
+ * - Has been created last month.
+ * - Isn't assigned to someone else.
+ * - Is in progress right now.
+ */
+bool IsActive(IStatus status) => status switch
 {
-    New => true,
-    InProgress => true,
     Complete => false,
+    New n => n.CreatedAt > DateTime.Now.AddMonths(-1),
+    InProgress { AssignedTo: User.SomeoneElse } => false,
+    InProgress p when p.AssignedAt <= DateTime.Now => true,
+    InProgress => false,
     _ => throw new ArgumentOutOfRangeException(),
 };
 
-var test = Test(statuses.First());
+char AsEmoji(bool b) => b ? '✅' : '❎';
+
+IStatus status = new Complete(DateTime.Now);
+Console.WriteLine($"Is a complete status active? {AsEmoji(IsActive(status))}");
+
+status = new New(DateTime.Now);
+Console.WriteLine($"Is a new status created now active? {AsEmoji(IsActive(status))}");
+
+status = new New(DateTime.Now.AddMonths(-3));
+Console.WriteLine($"Is a new status created 3 months ago active? {AsEmoji(IsActive(status))}");
+
+status = new InProgress(User.Someone, DateTime.Now);
+Console.WriteLine($"Is a in progress status assigned to someone active? {AsEmoji(IsActive(status))}");
+
+status = new InProgress(User.SomeoneElse, DateTime.Now);
+Console.WriteLine($"Is a in progress status assigned to someone else active? {AsEmoji(IsActive(status))}");
+
+status = new InProgress(User.Someone, DateTime.Now.AddDays(3));
+Console.WriteLine($"Is a in progress status assigned in the future active? {AsEmoji(IsActive(status))}");
 
 record New(DateTime CreatedAt) : IStatus;
 
