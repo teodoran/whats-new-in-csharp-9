@@ -2,12 +2,10 @@ What's new in csharp 9.0?
 =========================
 _Quick collection of examples of what's new in C# 9.0. Also, you should check out the [what's new guide by Microsoft](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-9)._
 
-But first, how do I get this thing?
------------------------------------
+### But first, how do I get this thing?
 Downloads for different platforms are available at [dotnet.microsoft.com/download/dotnet/5.0](https://dotnet.microsoft.com/download/dotnet/5.0).
 
-Top-level programs
-------------------
+### Top-level programs
 Whish C# was more like a scripting language? Not so much ceremony? Now you can have it! Try running "TopLevel":
 
 ```shell
@@ -22,11 +20,9 @@ Some things to note:
 * args will magically be available.
 * Yeah, await works as well.
 
-Init only setters
------------------
+### Init only setters
 
-Records
--------
+### Records
 
-Pattern matching
-----------------
+### Pattern matching
+Have a look at the [pattern matching enhancements section](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-9#pattern-matching-enhancements) in the what's new in C# 9.0 article from Microsoft.

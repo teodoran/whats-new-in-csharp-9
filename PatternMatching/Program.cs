@@ -8,6 +8,7 @@ var statuses = new IStatus[]
     new InProgress(User.SomeoneElse, DateTime.Now),
     new InProgress(User.Someone, DateTime.Now),
     new Complete(DateTime.MaxValue),
+    new Unsolvable(),
 };
 
 // To be or not to be
@@ -19,18 +20,26 @@ var noOfStatusesOtherThanInProgress = statuses.Count(status => status is not InP
 
 Console.WriteLine($"No statuses other than InProgress is {noOfStatusesOtherThanInProgress}");
 
-// Let's get to the matching!
+void IsNotNull(object o)
+{
+    if (o is not null)
+    {
+        // do something
+    }
+}
 
 /*
+ * Let's get to the matching!
+ *
  * Status is active if:
- * - Isn't complete.
+ * - Isn't complete or unsolvable.
  * - Has been created last month.
  * - Isn't assigned to someone else.
  * - Is in progress right now.
  */
 bool IsActive(IStatus status) => status switch
 {
-    Complete => false,
+    Complete or Unsolvable => false,
     New n => n.CreatedAt > DateTime.Now.AddMonths(-1),
     InProgress { AssignedTo: User.SomeoneElse } => false,
     InProgress p when p.AssignedAt <= DateTime.Now => true,
@@ -42,6 +51,9 @@ char AsEmoji(bool b) => b ? '✅' : '❎';
 
 IStatus status = new Complete(DateTime.Now);
 Console.WriteLine($"Is a complete status active? {AsEmoji(IsActive(status))}");
+
+status = new Unsolvable();
+Console.WriteLine($"Is a unsolvable status active? {AsEmoji(IsActive(status))}");
 
 status = new New(DateTime.Now);
 Console.WriteLine($"Is a new status created now active? {AsEmoji(IsActive(status))}");
@@ -61,6 +73,8 @@ Console.WriteLine($"Is a in progress status assigned in the future active? {AsEm
 record New(DateTime CreatedAt) : IStatus;
 
 record Complete(DateTime CompletedAt) : IStatus;
+
+record Unsolvable : IStatus;
 
 record InProgress(User AssignedTo, DateTime AssignedAt) : IStatus;
 
